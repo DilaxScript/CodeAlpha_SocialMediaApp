@@ -20,3 +20,21 @@ A full-stack social media platform built with Django REST Framework backend and 
 **Storage:** Local file system for media files
 
 ## Project Structure
+
+## Setup Instructions
+
+### Prerequisites
+- Python 3.8+
+- Node.js 14+
+- MySQL
+- Git
+
+### Backend Setup
+
+1. **Navigate to backend directory**
+   ```bash
+   cd social_media_backend
+
+   python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+pip install -r requirements.txt
