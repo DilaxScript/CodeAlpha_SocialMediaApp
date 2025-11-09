@@ -1,0 +1,67 @@
+from django.contrib import admin
+from django.urls import path, include
+from django.conf import settings
+from django.conf.urls.static import static
+from django.http import JsonResponse  # ✅ ADD THIS IMPORT
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+    TokenVerifyView,
+)
+
+# ✅ Health check view
+def health_check(request):
+    """
+    Simple health check endpoint
+    """
+    return JsonResponse({
+        'status': 'healthy', 
+        'service': 'Social Media Backend',
+        'version': '1.0.0'
+    })
+
+# ✅ Custom error handlers (create these in your views if needed)
+def custom_404_handler(request, exception):
+    return JsonResponse({
+        'error': 'Endpoint not found',
+        'status_code': 404
+    }, status=404)
+
+def custom_500_handler(request):
+    return JsonResponse({
+        'error': 'Internal server error',
+        'status_code': 500
+    }, status=500)
+
+urlpatterns = [
+    # --- Django Admin Interface ---
+    path('admin/', admin.site.urls),
+    
+    # --- API Endpoints ---
+    
+    # 1. Admin Management Endpoints
+    path('api/admin/', include('admin_panel.urls')), 
+    
+    # 2. User & Profile Endpoints  
+    path('api/users/', include('users.urls')),
+    
+    # 3. Posts, Comments, Likes Endpoints
+    path('api/', include('posts.urls')),  
+    
+    # 4. JWT Authentication Endpoints
+    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('api/token/verify/', TokenVerifyView.as_view(), name='token_verify'),
+    
+    # 5. Health Check Endpoint
+    path('api/health/', health_check, name='health_check'),
+]
+
+# ✅ Serve media files in development
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
+# ✅ Assign custom error handlers
+handler404 = custom_404_handler
+handler500 = custom_500_handler
